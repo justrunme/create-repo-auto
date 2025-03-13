@@ -3,27 +3,37 @@ name: Build and Release DEB Package
 on:
   push:
     tags:
-      - "v*.*.*"
+      - 'v*.*.*'
 
 jobs:
-  build:
+  build-deb:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y dpkg-dev
+          sudo apt update
+          sudo apt install -y dpkg-dev
 
-      - name: Build DEB
+      - name: Build DEB Package
         run: |
+          mkdir -p create-repo-auto_${GITHUB_REF#refs/tags/v}/usr/local/bin
+          mkdir -p create-repo-auto_${GITHUB_REF#refs/tags/v}/DEBIAN
+          cp create-repo usr/local/bin/
+          cp update-all.sh usr/local/bin/
+          chmod +x usr/local/bin/*
+          echo "Package: create-repo-auto
+Version: ${GITHUB_REF#refs/tags/v}
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: justrunme <you@example.com>
+Description: Auto-create and sync repositories for GitHub/GitLab" > DEBIAN/control
           dpkg-deb --build . create-repo-auto_${GITHUB_REF#refs/tags/v}.deb
 
-      - name: Release
+      - name: Release to GitHub
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            *.deb
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: '*.deb'
