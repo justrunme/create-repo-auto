@@ -17,21 +17,26 @@ jobs:
           sudo apt update
           sudo apt install -y dpkg-dev
 
-      - name: Build DEB Package
+      - name: Prepare package structure
         run: |
-          mkdir -p create-repo-auto_${GITHUB_REF#refs/tags/v}/usr/local/bin
-          mkdir -p create-repo-auto_${GITHUB_REF#refs/tags/v}/DEBIAN
-          cp create-repo usr/local/bin/
-          cp update-all.sh usr/local/bin/
-          chmod +x usr/local/bin/*
-          echo "Package: create-repo-auto
-Version: ${GITHUB_REF#refs/tags/v}
-Section: utils
-Priority: optional
-Architecture: all
-Maintainer: justrunme <you@example.com>
-Description: Auto-create and sync repositories for GitHub/GitLab" > DEBIAN/control
-          dpkg-deb --build . create-repo-auto_${GITHUB_REF#refs/tags/v}.deb
+          mkdir -p pkg/usr/local/bin
+          mkdir -p pkg/DEBIAN
+          cp create-repo pkg/usr/local/bin/
+          cp update-all.sh pkg/usr/local/bin/
+          chmod +x pkg/usr/local/bin/*
+          cat <<EOF > pkg/DEBIAN/control
+          Package: create-repo-auto
+          Version: ${GITHUB_REF#refs/tags/v}
+          Section: utils
+          Priority: optional
+          Architecture: all
+          Maintainer: justrunme <you@example.com>
+          Description: Auto-create and sync repositories for GitHub/GitLab
+          EOF
+
+      - name: Build DEB package
+        run: |
+          dpkg-deb --build pkg create-repo-auto_${GITHUB_REF#refs/tags/v}.deb
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
