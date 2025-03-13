@@ -17,7 +17,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dpkg-dev
 
-      - name: Prepare package structure
+      - name: Build DEB package
         run: |
           mkdir -p pkg/usr/local/bin
           mkdir -p pkg/DEBIAN
@@ -28,13 +28,10 @@ jobs:
           echo "Version: ${GITHUB_REF#refs/tags/v}" >> pkg/DEBIAN/control
           echo "Architecture: all" >> pkg/DEBIAN/control
           echo "Maintainer: justrunme <you@example.com>" >> pkg/DEBIAN/control
-          echo "Description: Auto-create repo and auto-sync with GitHub/GitLab" >> pkg/DEBIAN/control
-
-      - name: Build DEB package
-        run: |
+          echo "Description: Auto-create and sync repos (GitHub/GitLab)" >> pkg/DEBIAN/control
           dpkg-deb --build pkg create-repo-auto_${GITHUB_REF#refs/tags/v}.deb
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
         with:
-          files: 'create-repo-auto_*.deb'
+          files: '*.deb'
