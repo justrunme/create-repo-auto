@@ -1,14 +1,16 @@
-name: Build and Release DEB Package
+name: 🚀 Auto-release DEB Package
 
 on:
   push:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+
 jobs:
   build-deb:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -28,10 +30,12 @@ jobs:
           echo "Version: ${GITHUB_REF#refs/tags/v}" >> pkg/DEBIAN/control
           echo "Architecture: all" >> pkg/DEBIAN/control
           echo "Maintainer: justrunme <you@example.com>" >> pkg/DEBIAN/control
-          echo "Description: Auto-create and sync repos (GitHub/GitLab)" >> pkg/DEBIAN/control
+          echo "Description: Auto-create and sync repos for GitHub/GitLab" >> pkg/DEBIAN/control
           dpkg-deb --build pkg create-repo-auto_${GITHUB_REF#refs/tags/v}.deb
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
         with:
           files: '*.deb'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
