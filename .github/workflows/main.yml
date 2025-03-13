@@ -24,13 +24,14 @@ jobs:
           cp create-repo pkg/usr/local/bin/
           cp update-all.sh pkg/usr/local/bin/
           chmod +x pkg/usr/local/bin/*
+          # ВАЖНО: без отступов!
           cat <<EOF > pkg/DEBIAN/control
-          Package: create-repo-auto
-          Version: ${GITHUB_REF#refs/tags/v}
-          Architecture: all
-          Maintainer: justrunme <you@example.com>
-          Description: Auto-create repo CLI for GitHub and GitLab
-          EOF
+Package: create-repo-auto
+Version: ${GITHUB_REF#refs/tags/v}
+Architecture: all
+Maintainer: justrunme <you@example.com>
+Description: Auto-create repo CLI for GitHub and GitLab
+EOF
 
       - name: Build DEB package
         run: |
