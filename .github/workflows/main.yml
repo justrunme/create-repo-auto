@@ -27,11 +27,9 @@ jobs:
           cat <<EOF > pkg/DEBIAN/control
           Package: create-repo-auto
           Version: ${GITHUB_REF#refs/tags/v}
-          Section: utils
-          Priority: optional
           Architecture: all
           Maintainer: justrunme <you@example.com>
-          Description: Auto-create and sync repositories for GitHub/GitLab
+          Description: Auto-create repo CLI for GitHub and GitLab
           EOF
 
       - name: Build DEB package
@@ -41,4 +39,4 @@ jobs:
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
         with:
-          files: '*.deb'
+          files: 'create-repo-auto_*.deb'
