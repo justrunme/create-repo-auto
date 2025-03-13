@@ -14,8 +14,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y dpkg-dev
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev
 
       - name: Prepare package structure
         run: |
@@ -24,13 +24,12 @@ jobs:
           cp create-repo pkg/usr/local/bin/
           cp update-all.sh pkg/usr/local/bin/
           chmod +x pkg/usr/local/bin/*
-          # ВАЖНО: без отступов!
           cat <<EOF > pkg/DEBIAN/control
 Package: create-repo-auto
 Version: ${GITHUB_REF#refs/tags/v}
 Architecture: all
 Maintainer: justrunme <you@example.com>
-Description: Auto-create repo CLI for GitHub and GitLab
+Description: Auto-create repo and auto-sync with GitHub/GitLab
 EOF
 
       - name: Build DEB package
